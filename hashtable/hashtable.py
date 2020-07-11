@@ -91,8 +91,12 @@ class HashTable:
         """
         # Your code here
         key_index = self.hash_index(key) % len(self.hashlist)
-        self.hashlist[key_index] = value
+        if not self.hashlist[key_index]:
+            self.hashlist[key_index] = HashTableEntry(key, value) 
+        else:
+            self.hashlist[key_index].next = HashTableEntry(key, value)
 
+            
     def delete(self, key):
         """
         Remove the value stored with the given key.
@@ -118,8 +122,15 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        original_key = key       
+        requested = None
         key = self.hash_index(key)
-        return self.hashlist[key]
+        
+        if not self.hashlist[key]:
+            return requested        
+        else:
+            requested = self.hashlist[key].value if self.hashlist[key].key == original_key else requested
+        return requested
 
     def resize(self, new_capacity):
         """
@@ -129,7 +140,22 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        #store old hashlist
+        old_hashlist = self.hashlist
+        
+        #resize of old hashlist and clear it
+        self.capacity = new_capacity
+        self.hashlist = [None] * new_capacity
+        
+        curr_idx = None
+        
+        for n in old_hashlist:
+            self.put(n.key, n.value)
+            while n.next is not None:
+                curr_idx = n.next
+                self.put(curr_idx.key, curr_idx.value)
 
+        
 
 
 if __name__ == "__main__":
