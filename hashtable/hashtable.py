@@ -91,10 +91,14 @@ class HashTable:
         """
         # Your code here
         key_index = self.hash_index(key) % len(self.hashlist)
-        if not self.hashlist[key_index]:
-            self.hashlist[key_index] = HashTableEntry(key, value) 
+        current_entry = self.hashlist[key_index]
+        if not current_entry or current_entry.key == key:
+            self.hashlist[key_index] = HashTableEntry(key, value)
         else:
-            self.hashlist[key_index].next = HashTableEntry(key, value)
+            while current_entry.next is not None:
+                current_entry = current_entry.next
+            
+            current_entry.next = HashTableEntry(key, value)
 
             
     def delete(self, key):
@@ -106,12 +110,17 @@ class HashTable:
         Implement this.
         """
         # Your code here
-        key = self.hash_index(key)
-        if not self.hashlist[key]:
-            print("No value exists at this index")
-        else: 
-            self.hashlist[key] = None
-
+        original_key = key
+        new_key = self.hash_index(key)
+        current_entry = self.hashlist[new_key]
+        
+        if key == current_entry.key:
+           current_entry.value = None         
+        else:
+            while current_entry is not None:              
+                if key == current_entry.key:
+                    current_entry.value = None
+                current_entry = current_entry.next
 
     def get(self, key):
         """
@@ -121,16 +130,20 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-        original_key = key       
-        requested = None
-        key = self.hash_index(key)
+        # Your code here     
+        new_key = self.hash_index(key)
+        current_entry = self.hashlist[new_key]
         
-        if not self.hashlist[key]:
-            return requested        
+        if not current_entry:
+            return None     
         else:
-            requested = self.hashlist[key].value if self.hashlist[key].key == original_key else requested
-        return requested
+            while current_entry is not None:
+                if current_entry.key == key:
+                    break
+                else:
+                    current_entry = current_entry.next
+            
+        return current_entry.value if current_entry is not None else None
 
     def resize(self, new_capacity):
         """
@@ -146,17 +159,10 @@ class HashTable:
         #resize of old hashlist and clear it
         self.capacity = new_capacity
         self.hashlist = [None] * new_capacity
-        
-        curr_idx = None
-        
-        for n in old_hashlist:
-            self.put(n.key, n.value)
-            while n.next is not None:
-                curr_idx = n.next
-                self.put(curr_idx.key, curr_idx.value)
 
-        
-
+        for entry in old_hashlist:
+            self.put(entry.key, entry.value)
+            
 
 if __name__ == "__main__":
     ht = HashTable(8)
