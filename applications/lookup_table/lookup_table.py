@@ -1,5 +1,6 @@
+import math, random
 # Your code here
-
+lookup_table = {}
 
 def slowfun_too_slow(x, y):
     v = math.pow(x, y)
@@ -16,6 +17,19 @@ def slowfun(x, y):
     """
     # Your code here
 
+    if (x,y) not in lookup_table:
+        v = math.pow(x, y)
+        v = math.factorial(v)
+        v //= (x + y)
+        v %= 982451653
+        lookup_table[x, y] = v
+    else:
+        return lookup_table[x,y]
+    
+    return v
+    
+    
+
 
 
 # Do not modify below this line!
@@ -24,3 +38,5 @@ for i in range(50000):
     x = random.randrange(2, 14)
     y = random.randrange(3, 6)
     print(f'{i}: {x},{y}: {slowfun(x, y)}')
+
+
