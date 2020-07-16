@@ -1,6 +1,14 @@
 def no_dups(s):
     # Your code here
-
+    sentence = ""
+    
+    for w in s.split(" "):
+        if w in sentence:
+            continue
+        else:
+            sentence += w + " "
+    
+    return sentence.rstrip()
 
 
 if __name__ == "__main__":
