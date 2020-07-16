@@ -1,7 +1,18 @@
+import re
+
 def word_count(s):
     # Your code here
+    word_dict = {}
+    s = re.sub(r'[^a-z \']+', ' ', s.lower()).split(" ")
 
+    
+    for w in s:
+        if w == '':
+            continue
+        else:
+            word_dict[w] = word_dict[w] + 1 if w in word_dict else 1
 
+    return word_dict
 
 if __name__ == "__main__":
     print(word_count(""))
