@@ -22,7 +22,8 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
-
+        self.capacity = capacity
+        self.hashlist = [None] * self.capacity
 
     def get_num_slots(self):
         """
@@ -35,6 +36,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return self.capacity
 
 
     def get_load_factor(self):
@@ -44,6 +46,7 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        return len([n for n in self.hashlist if n != None]) / self.capacity
 
 
     def fnv1(self, key):
@@ -63,8 +66,13 @@ class HashTable:
         Implement this, and/or FNV-1.
         """
         # Your code here
-
-
+        hash = 5381
+        
+        for l in key:
+            hash = ((hash << 5) + hash) + ord(l)
+        
+        return hash
+    
     def hash_index(self, key):
         """
         Take an arbitrary key and return a valid integer index
@@ -82,18 +90,37 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        key_index = self.hash_index(key) % len(self.hashlist)
+        current_entry = self.hashlist[key_index]
+        if not current_entry or current_entry.key == key:
+            self.hashlist[key_index] = HashTableEntry(key, value)
+        else:
+            while current_entry.next is not None:
+                current_entry = current_entry.next
+            
+            current_entry.next = HashTableEntry(key, value)
 
-
+            
     def delete(self, key):
         """
         Remove the value stored with the given key.
 
-        Print a warning if the key is not found.
+        Print a warning if the key is not found.§
 
         Implement this.
         """
         # Your code here
-
+        original_key = key
+        new_key = self.hash_index(key)
+        current_entry = self.hashlist[new_key]
+        
+        if key == current_entry.key:
+           current_entry.value = None         
+        else:
+            while current_entry is not None:              
+                if key == current_entry.key:
+                    current_entry.value = None
+                current_entry = current_entry.next
 
     def get(self, key):
         """
@@ -103,8 +130,20 @@ class HashTable:
 
         Implement this.
         """
-        # Your code here
-
+        # Your code here     
+        new_key = self.hash_index(key)
+        current_entry = self.hashlist[new_key]
+        
+        if not current_entry:
+            return None     
+        else:
+            while current_entry is not None:
+                if current_entry.key == key:
+                    break
+                else:
+                    current_entry = current_entry.next
+            
+        return current_entry.value if current_entry is not None else None
 
     def resize(self, new_capacity):
         """
@@ -114,8 +153,16 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        #store old hashlist
+        old_hashlist = self.hashlist
+        
+        #resize of old hashlist and clear it
+        self.capacity = new_capacity
+        self.hashlist = [None] * new_capacity
 
-
+        for entry in old_hashlist:
+            self.put(entry.key, entry.value)
+            
 
 if __name__ == "__main__":
     ht = HashTable(8)
